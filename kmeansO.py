@@ -4,8 +4,8 @@ import sys
 import cv2
 
 def kmeansO(X,T,kmax,dyn,bs, killing, pl):
-    Er = []
-    TEr = []  
+    Er = np.array([])
+    TEr = np.array([])
     #error monitoring
     #X is input img    #T is []
     [n,d] = X.shape
@@ -118,6 +118,21 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
                         if Wtmp < best_Er:
                             best_M = Mtmp
                             best_Er = Wtmp
+                    M = best_M
+                    Wnew = best_Er
+                    if len(T)!=0:
+                        tmp = pairwise_distances(T,M,metric = "sqeuclidean")
+                        #tmp會是 拿T去掃M(T和每個M的距離) 然後 T有M個向量 M有N個向量
+                        #M有N個點 每個都是RGB
+                        #tmp就會生出 MxN 的矩陣
+
+                        #tmp=sqdist(T',M')
+                        #sqdist 一定要是行向量才能操作
+                        TEr = np.vstack((TEr, np.sum(np.amin(tmp,axis=1),axis=0)))
+                        #TEr是純數
+                        #TEr=[TEr; sum(min(tmp,[],2))]
+                    Er=np.vstack((Er, Wnew))
+                    k = k+1
                 else:
                     pass
             else:
