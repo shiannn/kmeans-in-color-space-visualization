@@ -22,7 +22,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         M=np.mean(X,axis=0)  #mean of 3 colors(RGB)
         K=pairwise_distances(X.T,metric = "sqeuclidean")
         L=X        #source img
-        print(M)
+        #print(M)
     elif dyn==2: 
         # use kd-tree results as means
         k=kmax
@@ -43,11 +43,12 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         L=X
     else:# use random subset of data as means
         k=kmax
-        tmp=randperm(n)
+        tmp=np.random.permutation(n)
         M=X[tmp[0:k-1],:] #tmp[1:k]
     
     realmax=sys.float_info.max
     while(k<=kmax):
+        print('k',k)
         kill=np.array([])
         # M is mean (16x3)
         # X is all the points with RGB 3 value (154401 x 3)
@@ -82,6 +83,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
                 M[i,:] = np.mean(temp,axis=0)
             elif killing==1:
                 kill=np.append(kill,i)
+        k=k+1
 
 
 
@@ -92,12 +94,12 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     [Er,M, nb, P] = [0,0,0,0]
     return [Er,M, nb, P]
 
-if(__name__=='__1main__'):
+if(__name__=='__main__'):
     X = [[1,2,3],[4,5,6],[7,8,9],[2,3,4],[5,2,7]]
     X = np.array(X)
-    [T,kmax,dyn,bs, killing, pl]=[0,0,1,0,0,0]
+    [T,kmax,dyn,bs, killing, pl]=[0,16,0,0,0,0]
     kmeansO(X,T,kmax,dyn,bs, killing, pl)
 
-if(__name__=='__main__'):
+if(__name__=='__1main__'):
     realmax=sys.float_info.max
     print(realmax)
