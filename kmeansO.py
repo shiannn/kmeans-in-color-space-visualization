@@ -1,6 +1,7 @@
 from sklearn.metrics import pairwise_distances
 import numpy as np
 import sys
+import cv2
 
 def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     Er = []
@@ -48,7 +49,6 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     
     realmax=sys.float_info.max
     while(k<=kmax):
-        print('k',k)
         kill=np.array([])
         # M is mean (16x3)
         # X is all the points with RGB 3 value (154401 x 3)
@@ -69,20 +69,23 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
 
         #update VQ's
         #更新cluster的中心
+        testSum = 0
         for i in range(len(M)):
             #16個cluster中心
             #遍歷所有index i 找出所有碰到中心i者
             I = np.argwhere(Iwin==i)
+            testSum += len(I)
             #歸在i群的所有人
             #I是一個 2D array，會使記下所有座標 (I 的值是 1~154401)
             if I.shape[0] > d:
                 #更新 cluster 中心 i
                 #X 是 nxd 的 矩陣
                 #找出所有 X 中落在 i 群的點，將其pixel value求平均
-                temp = [X[pos[0]][pos[1]] for pos in I]
+                temp = [X[pos[0]] for pos in I]
                 M[i,:] = np.mean(temp,axis=0)
             elif killing==1:
                 kill=np.append(kill,i)
+        print(testSum)
         k=k+1
 
 
@@ -95,11 +98,8 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     return [Er,M, nb, P]
 
 if(__name__=='__main__'):
-    X = [[1,2,3],[4,5,6],[7,8,9],[2,3,4],[5,2,7]]
-    X = np.array(X)
+    img = np.load('Flower.npy')
+    [m,n,d] = img.shape
+    X = np.reshape(img,(m*n,d))
     [T,kmax,dyn,bs, killing, pl]=[0,16,0,0,0,0]
     kmeansO(X,T,kmax,dyn,bs, killing, pl)
-
-if(__name__=='__1main__'):
-    realmax=sys.float_info.max
-    print(realmax)
