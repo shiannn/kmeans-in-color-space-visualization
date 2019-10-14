@@ -48,6 +48,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         M=X[tmp[0:k-1],:] #tmp[1:k]
     
     realmax=sys.float_info.max
+    Wold = realmax
     while(k<=kmax):
         kill=np.array([])
         # M is mean (16x3)
@@ -85,8 +86,44 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
                 M[i,:] = np.mean(temp,axis=0)
             elif killing==1:
                 kill=np.append(kill,i)
-        print(testSum)
-        k=k+1
+        print('testSum',testSum)
+        
+        if 1-Wnew/Wold < Threshold*(10-9*(k==kmax)):
+            # Wnew 和 Wold 相差太近就做
+            if dyn & k < kmax:
+                if dyn == 4:
+                    best_Er = Wnew
+                    for i in range(n):
+                        Wold = np.inf
+       	                Wtmp = Wnew
+                        #print(M.shape)
+                        #Mtmp = [M; X(i,:)]
+                        Mtmp = np.vstack((M, X[i,:]))
+                        while (1-Wtmp/Wold) > Threshold*10:
+                            Wold = Wtmp
+                            Dist = pairwise_distances(Mtmp,X,metric = "sqeuclidean")
+                            #Dist = sqdist(Mtmp',X')
+                            #[Dwin,Iwin] = min(Dist',[],2)
+                            Dist = Dist.T
+                            Dwin = np.amin(Dist,axis=1)
+                            Iwin = np.argmin(Dist,axis=1)
+                            #Wtmp = sum(Dwin)
+                            Wtmp = np.sum(Dwin,axis=0)
+                            for i in range(len(Mtmp)):
+                                I = np.argwhere(Iwin==i)
+                                if len(I)>d:
+                                    #Mtmp(i,:) = mean(X(I,:))
+                                    temp = [X[pos[0]] for pos in I]
+                                    Mtmp[i,:] = np.mean(temp,axis=0)
+                        if Wtmp < best_Er:
+                            best_M = Mtmp
+                            best_Er = Wtmp
+                else:
+                    pass
+            else:
+                k=kmax+1
+        #k=k+1
+
 
 
 
