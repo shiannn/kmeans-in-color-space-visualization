@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import cv2
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from pylab import *
 
 def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
@@ -53,7 +54,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
     Wold = realmax
 
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
+    ax = fig.add_subplot(111,projection='3d')
     plt.ion()
 
     while(k<=kmax):
@@ -174,9 +175,15 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         if pl:
             #先畫X再畫Y
             ax.cla()
-            ax.plot(X[:,2],X[:,1],'g',M[:,2],M[:,1],'k+',M[:,2],M[:,1],'k.')#
+            ax.set_xlabel('Red')
+            ax.set_ylabel('Green')
+            ax.set_zlabel('Blue')
+            ax.plot(X[0::50,2],X[0::50,1],X[0::50,0],'g.')
+            ax.plot(M[:,2],M[:,1],M[:,0],'k+')#X[:,2],X[:,1],X[:,0],'g',,M[:,2],M[:,1],M[:,0],'k.'
+            ax.plot(M[:,2],M[:,1],M[:,0],'k.')#RGB 210
             plt.pause(0.0000000000000001)
     plt.ioff()
+    plt.show()
     #RGB and BRG
     #Er=[Er; Wnew]
     Er = np.append(Er,Wnew)
