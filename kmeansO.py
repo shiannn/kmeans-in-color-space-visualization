@@ -15,7 +15,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         #print(n,d)
     P = np.zeros((n,1))
     #n pixels
-    Threshold = 1e-7 #0.0001
+    Threshold = 1e-4 #0.0001
     #用來判斷是否 convergence 的 Threshold
         #print(Threshold)
     nb = 0
@@ -86,8 +86,10 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         for i in range(len(M)):
             #16個cluster中心
             #遍歷所有index i 找出所有碰到中心i者
-            #I = np.argwhere(Iwin==i)
-            Cluster_i = [idx for idx in range(len(Iwin)) if Iwin[idx]==i]
+            Cluster_i = np.argwhere(Iwin==i)
+            Cluster_i = Cluster_i.flatten()
+            #print(Cluster_i[0:10])
+            #Cluster_i = [idx for idx in range(len(Iwin)) if Iwin[idx]==i]
             #print('Cluster_i',Cluster_i)
             testSum += len(Cluster_i)
             #歸在i群的所有人
@@ -96,12 +98,12 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
                 #更新 cluster 中心 i
                 #X 是 nxd 的 矩陣
                 #找出所有 X 中落在 i 群的點，將其pixel value求平均
-                #temp = [X[pos[0]] for pos in I]
-                #M[i,:] = np.mean(temp,axis=0)
-                rgbSum = np.array([0,0,0])
-                for a in Cluster_i:
-                    rgbSum = rgbSum + X[a,:]
-                M[i,:] = rgbSum / len(Cluster_i)
+                temp = [X[pos] for pos in Cluster_i]
+                M[i,:] = np.mean(temp,axis=0)
+                #rgbSum = np.array([0,0,0])
+                #for a in Cluster_i:
+                #    rgbSum = rgbSum + X[a,:]
+                #M[i,:] = rgbSum / len(Cluster_i)
                 #M[i,:] = X[Cluster_i,:]/len(Cluster_i)
             elif killing==1:
                 kill=np.append(kill,i)
