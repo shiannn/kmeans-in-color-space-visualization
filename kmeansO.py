@@ -52,9 +52,9 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
     realmax=sys.float_info.max
     Wold = realmax
 
-    #plt.ion()
-    #fig = plt.figure()
-    #ax = fig.add_subplot(1, 1, 1) 
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    plt.show(block=False)
 
     while(k<=kmax):
         kill=np.array([])
@@ -88,9 +88,6 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
             #遍歷所有index i 找出所有碰到中心i者
             Cluster_i = np.argwhere(Iwin==i)
             Cluster_i = Cluster_i.flatten()
-            #print(Cluster_i[0:10])
-            #Cluster_i = [idx for idx in range(len(Iwin)) if Iwin[idx]==i]
-            #print('Cluster_i',Cluster_i)
             testSum += len(Cluster_i)
             #歸在i群的所有人
             #I是一個 2D array，會使記下所有座標 (I 的值是 1~154401)
@@ -100,11 +97,6 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
                 #找出所有 X 中落在 i 群的點，將其pixel value求平均
                 temp = [X[pos] for pos in Cluster_i]
                 M[i,:] = np.mean(temp,axis=0)
-                #rgbSum = np.array([0,0,0])
-                #for a in Cluster_i:
-                #    rgbSum = rgbSum + X[a,:]
-                #M[i,:] = rgbSum / len(Cluster_i)
-                #M[i,:] = X[Cluster_i,:]/len(Cluster_i)
             elif killing==1:
                 kill=np.append(kill,i)
         #print('testSum',testSum)
@@ -181,11 +173,11 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         Wold = Wnew
         if pl:
             #先畫X再畫Y
-            pass
+            plt.cla()
+            ax.plot(X[:,2],X[:,1],'g.',M[:,2],M[:,1],'k+')
+            fig.canvas.draw()
+            time.sleep(0.00001)
     #RGB and BRG
-    plt.plot(X[:,2],X[:,1],'g.',M[:,2],M[:,1],'k.',M[:,2],M[:,1],'k+')
-    plt.show()
-    #plt.ioff()
     #Er=[Er; Wnew]
     Er = np.append(Er,Wnew)
     if len(T)!=0:
