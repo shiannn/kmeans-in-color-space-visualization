@@ -204,6 +204,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
 
 if(__name__=='__main__'):
     img = np.load('Flower.npy')
+    #img = np.load('whiteFlower.npy')
     [m,n,d] = img.shape
     X = np.reshape(img,(m*n,d))
     [T,kmax,dyn,bs, killing, pl]=[[],16,0,0,0,1]
