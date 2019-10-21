@@ -54,7 +54,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
-    plt.show(block=False)
+    plt.ion()
 
     while(k<=kmax):
         kill=np.array([])
@@ -173,10 +173,10 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         Wold = Wnew
         if pl:
             #先畫X再畫Y
-            plt.cla()
-            ax.plot(X[:,2],X[:,1],'g.',M[:,2],M[:,1],'k+')
-            fig.canvas.draw()
-            time.sleep(0.00001)
+            ax.cla()
+            ax.plot(M[:,2],M[:,1],'k+',M[:,2],M[:,1],'k.')#X[:,2],X[:,1],'g',
+            plt.pause(0.0000000000000001)
+    plt.ioff()
     #RGB and BRG
     #Er=[Er; Wnew]
     Er = np.append(Er,Wnew)
