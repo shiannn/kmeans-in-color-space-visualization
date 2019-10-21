@@ -2,6 +2,7 @@ from sklearn.metrics import pairwise_distances
 import numpy as np
 import sys
 import cv2
+import matplotlib.pyplot as plt
 
 def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     Er = np.array([])
@@ -45,7 +46,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
     else:# use random subset of data as means
         k=kmax
         tmp=np.random.permutation(n)
-        M=X[tmp[0:k-1],:] #tmp[1:k]
+        M=X[tmp[0:k],:] #tmp[1:k]
     
     realmax=sys.float_info.max
     Wold = realmax
@@ -54,6 +55,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         # M is mean (16x3)
         # X is all the points with RGB 3 value (154401 x 3)
         Dist = pairwise_distances(M,X)  #squared Euclidean distances to means; Dist (16 x 154401)
+        Dist = np.multiply(Dist,Dist)
         # Dist[i,j] 表示 第i個平均 mu 和第j個 X-pixel 的距離
         #Dist 是 16x154401 (k x pixel數量)
         Dist = Dist.T
@@ -65,9 +67,11 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         # Iwin 找出每個點和16個cluster中心的哪一個最短 (154401 x 1 且 值只可能是 1~16)
         P = Iwin
 
+        #print('Dwin shape',Dwin.shape)
+        print('Dwin ',Dwin)
         # error measures and mean updates
-        Wnew = np.sum(Dwin,axis=0) #(所有點的 Dwin 全部加起來)
-
+        Wnew = np.sum(Dwin) #(所有點的 Dwin 全部加起來)
+        print('Wnew',Wnew)
         #update VQ's
         #更新cluster的中心
         testSum = 0
@@ -90,7 +94,8 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
         
         if 1-Wnew/Wold < Threshold*(10-9*(k==kmax)):
             # Wnew 和 Wold 相差太近就做
-            if dyn & k < kmax:
+            print('dyn',dyn)
+            if dyn & (k < kmax):
                 if dyn == 4:
                     best_Er = Wnew
                     for i in range(n):
@@ -134,24 +139,52 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl):
                     Er=np.vstack((Er, Wnew))
                     k = k+1
                 else:
-                    pass
+                    # try to add a new cluster on some point x_i
+                    print('to repeat',Dwin)
+                    print('Dwin shape',Dwin.shape)
+                    print(np.tile(Dwin,1,K.shape[1])-K)
+                    #[tmp,new] = max(sum(max(repmat(Dwin,1,size(K,2))-K,0)));
+                    k = k+1
+                    #M = [M; L(new,:)+eps]
+                    if pl:
+                        print('new cluster, k = ',k)      
+                    #[Dwin,Iwin] = min(Dist',[],2);
+                    Dist = Dist.T
+                    Dwin = np.amin(Dist,axis=1)
+                    Iwin = np.argmin(Dist,axis=1)
+                    #Wnew        = sum(Dwin);
+                    Wnew = np.sum(Dwin,axis=0)
+                    #Er=[Er; Wnew];
+                    Er=np.vstack((Er, Wnew))
+                    if len(T)!=0:
+                        tmp = pairwise_distances(T,M,metric = "sqeuclidean")
+                        TEr = np.vstack((TEr, np.sum(np.amin(tmp,axis=1),axis=0)))
             else:
                 k=kmax+1
         #k=k+1
-
-
-
-
-
-
-
-
-    [Er,M, nb, P] = [0,0,0,0]
+        Wold = Wnew
+        if pl:
+            #fig, ax = plt.subplots()
+            #plt.plot(X[:,1],X[:,2],'g.',M[:,1],M[:,2],'k.',M[:,1],M[:,2],'k+')
+            #fig.canvas.draw()
+            #plt.show()
+            pass
+    #Er=[Er; Wnew]
+    Er = np.append(Er,Wnew)
+    if len(T)!=0:
+        #tmp=sqdist(T',M')
+        #TEr=[TEr; sum(min(tmp,[],2))]
+        TEr = np.concatenate((TEr,TEr),axis=0) 
+        Er=np.concatenate((Er,TEr),axis=1) 
+    #將M的第kill列刪去
+    #M(kill,:)=[]
+    #M(kill-1,:)=[]
+    M = np.delete(M,kill-1,axis=0)
     return [Er,M, nb, P]
 
 if(__name__=='__main__'):
     img = np.load('Flower.npy')
     [m,n,d] = img.shape
     X = np.reshape(img,(m*n,d))
-    [T,kmax,dyn,bs, killing, pl]=[0,16,0,0,0,0]
+    [T,kmax,dyn,bs, killing, pl]=[[],16,0,0,0,1]
     kmeansO(X,T,kmax,dyn,bs, killing, pl)
