@@ -79,7 +79,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         #print('Dwin ',Dwin)
         # error measures and mean updates
         Wnew = np.sum(Dwin) #(所有點的 Dwin 全部加起來)
-        print('Wnew',Wnew)
+        #print('Wnew',Wnew)
         #update VQ's
         #更新cluster的中心
         testSum = 0
@@ -102,7 +102,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         #print('testSum',testSum)
         if 1-Wnew/Wold < Threshold*(10-9*(k==kmax)):
             # Wnew 和 Wold 相差太近就做
-            print('dyn',dyn)
+            #print('dyn',dyn)
             if dyn & (k < kmax):
                 if dyn == 4:
                     best_Er = Wnew
@@ -174,7 +174,7 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         if pl:
             #先畫X再畫Y
             ax.cla()
-            ax.plot(M[:,2],M[:,1],'k+',M[:,2],M[:,1],'k.')#X[:,2],X[:,1],'g',
+            ax.plot(X[:,2],X[:,1],'g',M[:,2],M[:,1],'k+',M[:,2],M[:,1],'k.')#
             plt.pause(0.0000000000000001)
     plt.ioff()
     #RGB and BRG
@@ -190,6 +190,9 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
     M = np.delete(M,kill-1,axis=0)
     #for a in P:
     #    print(a)
+    np.save('DistanceSumBetweenPointAndCluster.npy',Er)
+    np.save('cluster16_RGB.npy',M)
+    np.save('PointBelongToCluster.npy',P)
     return [Er,M, nb, P]
 
 if(__name__=='__main__'):
