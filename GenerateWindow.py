@@ -44,7 +44,8 @@ def GenerateWindow(scale):
     return W
     
 if __name__=='__main__':
-    W = GenerateWindow(2)
-    print(W)
-
-    print(W.shape)
+    for w in range(1,5):
+        W = GenerateWindow(w)
+        print(W)
+        name = 'Window' + str(w)
+        np.save(name,W)

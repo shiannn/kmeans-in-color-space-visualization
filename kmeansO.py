@@ -175,12 +175,14 @@ def kmeansO(X,T,kmax,dyn,bs, killing, pl,img):
         if pl:
             #先畫X再畫Y
             ax.cla()
+            ax.set_title('K means Clustering in RGB Space')
             ax.set_xlabel('Red')
             ax.set_ylabel('Green')
             ax.set_zlabel('Blue')
             ax.plot(X[0::50,2],X[0::50,1],X[0::50,0],'g.')
             ax.plot(M[:,2],M[:,1],M[:,0],'k+')#X[:,2],X[:,1],X[:,0],'g',,M[:,2],M[:,1],M[:,0],'k.'
             ax.plot(M[:,2],M[:,1],M[:,0],'k.')#RGB 210
+            ax.legend(['pixels','cluster\ncenter'],loc='upper left')
             plt.pause(0.0000000000000001)
     plt.ioff()
     plt.show()
