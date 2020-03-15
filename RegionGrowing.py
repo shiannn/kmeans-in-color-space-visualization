@@ -7,7 +7,7 @@ def RegionGrowing(img):
     [m,n,d] = img.shape
     X = np.reshape(img,(m*n,d))
     X = X.astype(np.float64)
-    #[tmp,M,tmp2,P] = kmeansO(X,[],16,0,0,0,1,img)
+    [tmp,M,tmp2,P] = kmeansO(X,[],16,0,0,0,1,img)
     
     tmp = np.load('DistanceSumBetweenPointAndCluster.npy') #tmp是
     M = np.load('cluster16_RGB.npy') #M是16個cluster中心，每個都有 RGB 3個數值
@@ -18,12 +18,14 @@ def RegionGrowing(img):
     np.save('mapping.npy',mapping)
 
     [m,n] = mapping.shape
-    JI = np.zeros((5,m,n))
+    #JI = np.zeros((5,m,n))
+    """
     for w in range(1,5):
         W = GenerateWindow(w)
-        JI[w] = JImage(mapping, W)  #cell array
-    print(JI)
-
+        JI = JImage(mapping, W)  #cell array
+        #print(JI)
+    """
+    
     return [0,0,0,0]
 
 if __name__ == '__main__':
@@ -36,6 +38,8 @@ if __name__ == '__main__':
     for w in range(1,5):
         W = GenerateWindow(w)
         JI = JImage(mapping, W)  #cell array
+        JIname = 'JImage'+str(w) +'.npy'
+        np.save(JIname,JI)
         print(JI)
     """
     """
